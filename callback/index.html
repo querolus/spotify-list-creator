@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Redirecting…</title>
+  <script>
+    // Spotify redirects here with ?code=... — forward everything to the main page
+    const params = window.location.search;
+    window.location.replace('/' + params);
+  </script>
+</head>
+<body>Redirecting…</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create Spotify playlists from a simple text list. No install needed — runs entirely in your browser.">
+  <title>Spotify Playlist Creator</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎵</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-container">
+
+  <!-- ═══ Hero ═══ -->
+  <header class="hero">
+    <div class="hero-icon">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+      </svg>
+    </div>
+    <h1>Playlist Creator</h1>
+    <p>Paste your song list, click create, and get a Spotify playlist instantly.</p>
+  </header>
+
+  <!-- ═══ User Bar (shown when logged in) ═══ -->
+  <div id="user-bar" class="user-bar hidden">
+    <img src="" alt="Avatar">
+    <div class="user-info">
+      <div class="user-name"></div>
+      <div class="user-label">Connected to Spotify</div>
+    </div>
+    <button id="btn-logout" class="btn-logout">Log out</button>
+  </div>
+
+  <!-- ═══ VIEW: Login ═══ -->
+  <section data-view="login" class="hidden">
+    <div class="card" style="text-align: center;">
+      <div class="card-header" style="justify-content: center;">
+        <h2>Connect your Spotify account</h2>
+      </div>
+      <p style="color: var(--text-secondary); margin-bottom: var(--space-xl); font-size: 0.92rem;">
+        Log in with Spotify to search songs and create playlists directly from your browser. Your credentials are handled securely by Spotify — this app never sees your password.
+      </p>
+      <button id="btn-login" class="btn btn-primary btn-block">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+        </svg>
+        Log in with Spotify
+      </button>
+
+      <!-- Advanced: Custom Client ID -->
+      <div style="margin-top: var(--space-xl); text-align: left;">
+        <button id="settings-toggle" class="settings-toggle">
+          <span class="chevron">▶</span>
+          <span>Advanced: Use your own Spotify App</span>
+        </button>
+
+        <div id="settings-panel" class="settings-panel">
+          <div class="settings-content">
+            <div class="warning-box">
+              <strong>⚠ Why use your own Client ID?</strong><br>
+              The default Spotify App runs in development mode, which is limited to <strong>25 users</strong>. 
+              If you can't log in (getting a 403 error), the limit has been reached. Creating your own Spotify App 
+              takes 2 minutes and gives you your own quota.
+            </div>
+
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: var(--space-md);">
+              Follow these steps to create your own Spotify App:
+            </p>
+
+            <ol class="guide-steps">
+              <li>Go to the <a href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener">Spotify Developer Dashboard</a> and log in with your Spotify account.</li>
+              <li>Click <strong>"Create app"</strong>. Give it any name (e.g. "My Playlist Creator") and description.</li>
+              <li>In the <strong>"Redirect URI"</strong> field, paste this exact URL:<br>
+                <code id="redirect-uri-display"></code></li>
+              <li>Under <strong>"Which API/SDKs are you planning to use?"</strong>, select <strong>Web API</strong>.</li>
+              <li>Click <strong>"Save"</strong>.</li>
+              <li>Go to <strong>"Settings"</strong> on your new app. Copy the <strong>Client ID</strong> (it looks like a 32-character hex string).</li>
+              <li>Paste it below and click <strong>"Save Client ID"</strong>.</li>
+            </ol>
+
+            <div class="form-group" style="margin-top: var(--space-lg);">
+              <label class="form-label" for="client-id-input">Your Client ID</label>
+              <div style="display: flex; gap: var(--space-sm);">
+                <input type="text" id="client-id-input" class="form-input" placeholder="e.g. 1a891534bc86445c8fcd2af762247701" spellcheck="false" autocomplete="off">
+                <button id="save-client-id" class="btn btn-secondary btn-sm" style="white-space: nowrap;">Save Client ID</button>
+              </div>
+              <div class="form-hint">Leave empty to use the default app.</div>
+            </div>
+
+            <div class="info-box">
+              <strong>💡 Is this safe?</strong> The Client ID is not a secret — it's designed to be public 
+              in Spotify's PKCE authentication flow. Your password and tokens are handled entirely by Spotify. 
+              This page never stores or transmits anything sensitive.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ VIEW: Main (Song Input) ═══ -->
+  <section data-view="main" class="hidden">
+
+    <!-- Card: Song List -->
+    <div class="card">
+      <div class="card-header">
+        <div class="step-badge">1</div>
+        <h2>Your Song List</h2>
+      </div>
+
+      <!-- Drop zone -->
+      <div id="drop-zone" class="drop-zone">
+        <div class="drop-zone-icon">📄</div>
+        <div class="drop-zone-text">Drop a <strong>.txt</strong> file here, or click to browse</div>
+        <div class="drop-zone-hint">One song per line — format: <em>Artist - Title</em></div>
+        <input type="file" id="file-input" accept=".txt,.text" class="hidden">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="song-input">Or paste your songs directly</label>
+        <textarea id="song-input" class="form-input" placeholder="Estopa - Vientos de tormenta&#10;Bad Bunny - NUEVAYoL&#10;Shakira - Waka Waka&#10;Raphael - Mi gran noche&#10;&#10;# Lines starting with # are ignored"></textarea>
+        <div class="form-hint">One song per line. Use <strong>Artist - Title</strong> for best results. Lines starting with <strong>#</strong> are ignored.</div>
+      </div>
+    </div>
+
+    <!-- Card: Playlist Options -->
+    <div class="card">
+      <div class="card-header">
+        <div class="step-badge">2</div>
+        <h2>Playlist Details</h2>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="playlist-name">Playlist name</label>
+        <input type="text" id="playlist-name" class="form-input" placeholder="My awesome playlist">
+      </div>
+    </div>
+
+    <!-- Create Button -->
+    <button id="btn-create" class="btn btn-primary btn-block" style="font-size: 1.05rem; padding: 18px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 22px; height: 22px;">
+        <circle cx="12" cy="12" r="10"/>
+        <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/>
+      </svg>
+      Create Playlist
+    </button>
+  </section>
+
+  <!-- ═══ VIEW: Progress ═══ -->
+  <section data-view="progress" class="hidden">
+    <div class="card progress-section">
+      <div class="progress-header">
+        <h2>Searching songs…</h2>
+        <button id="btn-cancel" class="btn btn-secondary btn-sm">Cancel</button>
+      </div>
+
+      <div class="progress-bar-container">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+
+      <div class="progress-stats">
+        <div class="stat">
+          <span id="stat-found" class="stat-value success">0</span>
+          <span class="stat-label">Found</span>
+        </div>
+        <div class="stat">
+          <span id="stat-not-found" class="stat-value error">0</span>
+          <span class="stat-label">Not found</span>
+        </div>
+        <div class="stat">
+          <span id="stat-duplicates" class="stat-value warning">0</span>
+          <span class="stat-label">Duplicates</span>
+        </div>
+        <div class="stat">
+          <span id="stat-total" class="stat-value info">0/0</span>
+          <span class="stat-label">Progress</span>
+        </div>
+      </div>
+
+      <div id="log-container" class="log-container"></div>
+    </div>
+  </section>
+
+  <!-- ═══ VIEW: Result ═══ -->
+  <section data-view="result" class="hidden">
+    <div class="card result-card">
+      <h3>🎉 Playlist Created!</h3>
+      <p id="result-count">0 songs added to your playlist.</p>
+      <a id="result-link" href="#" target="_blank" rel="noopener" class="btn btn-primary">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" style="width: 20px; height: 20px;">
+          <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+        </svg>
+        Open in Spotify
+      </a>
+    </div>
+
+    <!-- Not-found songs list -->
+    <div id="not-found-section" class="card hidden">
+      <h3 style="font-size: 1rem; margin-bottom: var(--space-md);">Songs not found</h3>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: var(--space-md);">
+        These songs couldn't be found on Spotify. Try adjusting the artist name or title.
+      </p>
+      <ul id="not-found-list" style="list-style: none; font-size: 0.85rem; color: var(--color-error);">
+      </ul>
+    </div>
+
+    <button id="btn-new" class="btn btn-secondary btn-block" style="margin-top: var(--space-md);">
+      Create another playlist
+    </button>
+  </section>
+
+  <!-- ═══ Footer ═══ -->
+  <footer class="footer">
+    <p>Built with the <a href="https://developer.spotify.com/documentation/web-api" target="_blank" rel="noopener">Spotify Web API</a>. No backend — runs 100% in your browser.</p>
+  </footer>
+
+</div>
+
+<!-- Populate the redirect URI display dynamically -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const el = document.getElementById('redirect-uri-display');
+    if (el) {
+      const url = new URL(window.location.href);
+      url.search = '';
+      url.hash = '';
+      el.textContent = url.toString();
+    }
+  });
+</script>
+<script src="app.js"></script>
+
+</body>
+</html>
