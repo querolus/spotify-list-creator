@@ -10,7 +10,7 @@ This repository contains two different ways to create Spotify playlists from a s
 
 Create playlists right in your browser. No Python, no install, no backend. Just open the page, paste your songs, and go.
 
-**🚀 Try It Online:** **[Open Spotify Playlist Creator →](https://YOUR-USERNAME.github.io/spotify-list-creator/)**  
+**🚀 Try It Online:** **[Open Spotify Playlist Creator →](https://querolus.github.io/spotify-list-creator/)**  
 *(Replace the URL above with your actual GitHub Pages URL after deploying).*
 
 ### How It Works
