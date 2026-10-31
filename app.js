@@ -75,6 +75,16 @@
 
   // ── OAuth Flow ───────────────────────────────────────────────────────
   async function startLogin() {
+    // Spotify rejects file:// redirect URIs — the app must be served over HTTP.
+    if (window.location.protocol === 'file:') {
+      alert(
+        'Esta app no puede abrirse directamente como archivo (file://).\n\n' +
+        'Ejecuta "iniciar.bat" (o "python -m http.server 8888" en esta carpeta) ' +
+        'y abre http://127.0.0.1:8888/ en el navegador.'
+      );
+      return;
+    }
+
     const codeVerifier = generateRandomString(64);
     const codeChallenge = await generateCodeChallenge(codeVerifier);
 
@@ -546,6 +556,15 @@
 
   // ── Initialization ───────────────────────────────────────────────────
   async function init() {
+    // Spotify only allows loopback IPs (not "localhost") as redirect URIs, and
+    // sessionStorage is per-origin, so always run on 127.0.0.1 locally.
+    if (window.location.hostname === 'localhost') {
+      const url = new URL(window.location.href);
+      url.hostname = '127.0.0.1';
+      window.location.replace(url.toString());
+      return;
+    }
+
     // Check if returning from Spotify auth redirect
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');

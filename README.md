@@ -19,10 +19,25 @@ Create playlists right in your browser. No Python, no install, no backend. Just 
 3. **Click** "Create Playlist".
 4. **Done** — your playlist appears in Spotify.
 
+### Run It Locally
+> ⚠️ **Do not open `index.html` by double-clicking it.** Pages opened as `file://` cannot log in to Spotify (you'll get `redirect_uri: Not matching configuration`).
+
+1. Make sure `http://127.0.0.1:8888/callback` is listed under **Redirect URIs** in your app in the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard) (exact match, no trailing slash).
+2. Start the local server:
+   - **Windows:** double-click `iniciar.bat`, **or**
+   - **Any OS:** open a terminal in this folder and run:
+     ```bash
+     python -m http.server 8888 --bind 127.0.0.1
+     ```
+3. Open **http://127.0.0.1:8888/** in your browser (`iniciar.bat` does this for you).
+4. Keep the terminal window open while you use the app. Close it (or press `Ctrl+C`) to stop the server.
+
+*Requires Python 3. Use `127.0.0.1`, not `localhost`: Spotify no longer accepts `localhost` redirect URIs.*
+
 ### Deploy Your Own Web App
 *   **GitHub Pages:** Fork/clone this repo. Go to **Settings → Pages → Source: main branch**.
 *   **Spotify App:** Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard) and create an app. Add your GitHub Pages URL to **Redirect URIs** (e.g., `https://YOUR-USERNAME.github.io/REPO-NAME/`).
-*   **Local Testing:** Run `python -m http.server 8888` and add `http://localhost:8888/` and `http://127.0.0.1:8888/callback` as Redirect URIs in your Spotify App.
+*   **Local Testing:** Double-click `iniciar.bat` (or run `python -m http.server 8888`) and open `http://127.0.0.1:8888/`. Add `http://127.0.0.1:8888/callback` as a Redirect URI in your Spotify App. Do **not** open `index.html` directly (`file://` is rejected by Spotify), and note Spotify no longer accepts `localhost` redirect URIs.
 
 ---
 
@@ -71,6 +86,7 @@ Lines starting with `#` are ignored (you can use them as comments).
 | `style.css` | Styles (dark Spotify theme) |
 | `app.js` | Logic (OAuth, search, playlist creation) |
 | `callback/index.html` | Redirect handler for OAuth |
+| `iniciar.bat` | Starts the local server and opens the app (Windows) |
 | **CLI App** | |
 | `crear_playlist_spotify.py` | Original Python CLI version |
 | **Data** | |
